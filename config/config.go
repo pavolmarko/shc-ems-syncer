@@ -1,13 +1,14 @@
 package config
 
 import (
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"os"
 )
 
 type ConfigJson struct {
-	ShcHostport           string `json:"shc-hostport"`
+	ShcHost               string `json:"shc-host"`
 	ShcIssuingCaFile      string `json:"shc-issuing-ca-file"`
 	ShcClientKeyFile      string `json:"shc-client-key-file"`
 	ShcClientCertFile     string `json:"shc-client-cert-file"`
@@ -16,9 +17,10 @@ type ConfigJson struct {
 }
 
 type Config struct {
-	ShcHostport       string
+	ShcHost           string
 	EmsEspHostport    string
 	EmsEspAccessToken string
+	ShcCaCertPool     *x509.CertPool
 }
 
 func Read(configPath string) (Config, error) {
@@ -37,10 +39,21 @@ func Read(configPath string) (Config, error) {
 		return Config{}, err
 	}
 
+	bytes, err = os.ReadFile(cfgRaw.ShcIssuingCaFile)
+	if err != nil {
+		return Config{}, fmt.Errorf("can't read issuing ca file '%s': %v", cfgRaw.ShcIssuingCaFile, err)
+	}
+
+	shcCaCertPool := x509.NewCertPool()
+	if ok := shcCaCertPool.AppendCertsFromPEM(bytes); !ok {
+		return Config{}, fmt.Errorf("no certs found in %s", cfgRaw.ShcIssuingCaFile)
+	}
+
 	return Config{
-		ShcHostport:       cfgRaw.ShcHostport,
+		ShcHost:           cfgRaw.ShcHost,
 		EmsEspHostport:    cfgRaw.EmsEspHostport,
 		EmsEspAccessToken: emsEspAccessToken,
+		ShcCaCertPool:     shcCaCertPool,
 	}, nil
 }
 

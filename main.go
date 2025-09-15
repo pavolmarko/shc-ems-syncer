@@ -7,6 +7,7 @@ import (
 
 	"github.com/pavolmarko/shc-ems-syncer/config"
 	"github.com/pavolmarko/shc-ems-syncer/ems"
+	"github.com/pavolmarko/shc-ems-syncer/shc"
 )
 
 func main() {
@@ -36,6 +37,13 @@ func start() error {
 		return fmt.Errorf("can't ping ems: %v", err)
 	}
 
+	fmt.Println(res)
+
+	shcCli := shc.CreateClient(cfg.ShcHost, cfg.ShcCaCertPool)
+	res, err = shcCli.Ping()
+	if err != nil {
+		return fmt.Errorf("can't ping shc: %v", err)
+	}
 	fmt.Println(res)
 
 	return nil

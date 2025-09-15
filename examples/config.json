@@ -1,0 +1,8 @@
+{
+	"shc-host": "shc40707b",
+	"shc-issuing-ca-file": "shc-ca.pem",
+	"shc-client-key-file": "secrets/shc-client-key.pem",
+	"shc-client-cert-file": "secrets/shc-client-cert.pem",
+	"ems-esp-hostport": "ems-esp:80",
+	"ems-esp-access-token-file": "secrets/ems-esp-access-token"
+}
