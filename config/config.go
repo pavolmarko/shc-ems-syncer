@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
@@ -21,6 +22,7 @@ type Config struct {
 	EmsEspHostport    string
 	EmsEspAccessToken string
 	ShcCaCertPool     *x509.CertPool
+	ShcClientCert     tls.Certificate
 }
 
 func Read(configPath string) (Config, error) {
@@ -49,11 +51,17 @@ func Read(configPath string) (Config, error) {
 		return Config{}, fmt.Errorf("no certs found in %s", cfgRaw.ShcIssuingCaFile)
 	}
 
+	shcClientCert, err := tls.LoadX509KeyPair(cfgRaw.ShcClientCertFile, cfgRaw.ShcClientKeyFile)
+	if err != nil {
+		return Config{}, fmt.Errorf("can't parse client key / cert '%s'/'%s': %v", cfgRaw.ShcClientKeyFile, cfgRaw.ShcClientCertFile, err)
+	}
+
 	return Config{
 		ShcHost:           cfgRaw.ShcHost,
 		EmsEspHostport:    cfgRaw.EmsEspHostport,
 		EmsEspAccessToken: emsEspAccessToken,
 		ShcCaCertPool:     shcCaCertPool,
+		ShcClientCert:     shcClientCert,
 	}, nil
 }
 

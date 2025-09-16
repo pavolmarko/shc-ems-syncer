@@ -39,7 +39,10 @@ func start() error {
 
 	fmt.Println(res)
 
-	shcCli := shc.CreateClient(cfg.ShcHost, cfg.ShcCaCertPool)
+	shcCli := shc.CreateClient(cfg.ShcHost, cfg.ShcCaCertPool, cfg.ShcClientCert)
+	fmt.Println(shcCli.FormatClientCertForRegister())
+	return nil
+
 	res, err = shcCli.Ping()
 	if err != nil {
 		return fmt.Errorf("can't ping shc: %v", err)
