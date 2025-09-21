@@ -1,0 +1,18 @@
+[req]
+distinguished_name=dn
+
+# Extensions to add to a certificate request
+req_extensions = v3_ext
+
+# Extensions to add to a self-signed certificate
+x509_extensions	= v3_ext
+
+[dn]
+0.organizationName		= Organization Name
+
+commonName			= Common Name (should likely start with OSS)
+commonName_max			= 64
+
+[v3_ext]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
